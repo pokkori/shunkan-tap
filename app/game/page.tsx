@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import ShareCard from "@/components/ShareCard";
 import { calcPercentile, getLocalDiagnosis, DiagnosisResult } from "@/lib/diagnosis";
 import { useGameSounds } from "@/hooks/useGameSounds";
@@ -10,7 +11,12 @@ type Phase = "ready" | "waiting" | "flash" | "result" | "done";
 const TOTAL_ROUNDS = 10;
 const FLASH_COLORS = ["#00ff88", "#6ee7f7", "#f59e0b", "#f472b6", "#a78bfa"];
 
-export default function GamePage() {
+function GameInner() {
+  const searchParams = useSearchParams();
+  const challengeMs = searchParams.get("challenge")
+    ? parseInt(searchParams.get("challenge")!, 10)
+    : null;
+
   const [phase, setPhase] = useState<Phase>("ready");
   const [round, setRound] = useState(0);
   const [times, setTimes] = useState<number[]>([]);
@@ -34,6 +40,12 @@ export default function GamePage() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
   };
 
+  const vibrate = (pattern: number | number[]) => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(pattern);
+    }
+  };
+
   const startWaiting = useCallback(() => {
     setPhase("waiting");
     setIsFoul(false);
@@ -44,6 +56,7 @@ export default function GamePage() {
       setFlashColor(color);
       flashStartRef.current = performance.now();
       playFlash();
+      vibrate(50);
       setPhase("flash");
       // 2秒後に自動で「遅すぎ」
       timeoutRef.current = setTimeout(() => {
@@ -63,6 +76,7 @@ export default function GamePage() {
       // フライング
       clearTimer();
       playFoul();
+      vibrate([100, 50, 100]);
       setIsFoul(true);
       setCurrentMs(1000);
       setPhase("result");
@@ -91,6 +105,7 @@ export default function GamePage() {
     setPhase("done");
     setIsLoading(true);
     playVictory();
+    vibrate([100, 50, 100]);
     const valid = allTimes.filter(t => t < 1500);
     const avg = valid.length > 0
       ? Math.round(valid.reduce((a, b) => a + b, 0) / valid.length)
@@ -139,7 +154,7 @@ export default function GamePage() {
         {isLoading ? (
           <div className="text-blue-300 animate-pulse text-lg">🤖 AIが診断中...</div>
         ) : diagnosis ? (
-          <ShareCard result={diagnosis} times={times} />
+          <ShareCard result={diagnosis} times={times} challengeMs={challengeMs} />
         ) : null}
       </div>
     );
@@ -152,6 +167,19 @@ export default function GamePage() {
         <a href="/" className="absolute top-4 left-4 text-blue-400 text-sm">← トップ</a>
         <div className="text-6xl mb-4" style={{ filter: "drop-shadow(0 0 20px #6ee7f7)" }}>⚡</div>
         <h1 className="text-3xl font-black mb-2" style={{ color: "#6ee7f7" }}>瞬感タップ</h1>
+
+        {challengeMs !== null && (
+          <div className="rounded-2xl p-4 mb-4 text-center w-full max-w-xs"
+            style={{
+              background: "rgba(239,68,68,0.15)",
+              border: "1px solid rgba(239,68,68,0.4)",
+            }}>
+            <div className="text-sm text-red-300 mb-1">友達からの挑戦状！</div>
+            <div className="text-3xl font-black text-red-400">{challengeMs}ms</div>
+            <div className="text-xs text-red-300 mt-1">この記録を超えろ！</div>
+          </div>
+        )}
+
         <p className="text-blue-300 mb-8 text-sm text-center">
           画面が光った瞬間にタップ！<br />10回計測してAIが診断
         </p>
@@ -172,7 +200,7 @@ export default function GamePage() {
             boxShadow: "0 0 30px rgba(245,158,11,0.5)",
             textShadow: "0 1px 3px rgba(0,0,0,0.3)",
           }}>
-          計測スタート ⚡
+          {challengeMs !== null ? "挑戦を受ける ⚔️" : "計測スタート ⚡"}
         </button>
       </div>
     );
@@ -242,5 +270,18 @@ export default function GamePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function GamePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-dvh flex items-center justify-center"
+        style={{ background: "#0a0a1a" }}>
+        <div className="text-blue-300 animate-pulse">読み込み中...</div>
+      </div>
+    }>
+      <GameInner />
+    </Suspense>
   );
 }
