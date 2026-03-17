@@ -151,9 +151,10 @@ export default function GamePage() {
           onClick={startWaiting}
           className="px-14 py-4 rounded-2xl text-xl font-black transition-all active:scale-95"
           style={{
-            background: "linear-gradient(135deg, #6ee7f7, #3b82f6)",
-            color: "#000",
-            boxShadow: "0 0 30px rgba(110,231,247,0.4)",
+            background: "linear-gradient(135deg, #f59e0b, #ef4444)",
+            color: "#fff",
+            boxShadow: "0 0 30px rgba(245,158,11,0.5)",
+            textShadow: "0 1px 3px rgba(0,0,0,0.3)",
           }}>
           計測スタート ⚡
         </button>
