@@ -20,9 +20,15 @@ export default function GamePage() {
   const [diagnosis, setDiagnosis] = useState<DiagnosisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [bestAvg, setBestAvg] = useState<number | null>(null);
   const flashStartRef = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { playFlash, playTap, playFoul, playVictory } = useGameSounds();
+
+  useEffect(() => {
+    const b = localStorage.getItem("shunkan_best_avg");
+    if (b) setBestAvg(parseInt(b));
+  }, []);
 
   const clearTimer = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -89,6 +95,11 @@ export default function GamePage() {
     const avg = valid.length > 0
       ? Math.round(valid.reduce((a, b) => a + b, 0) / valid.length)
       : 500;
+    const prev = parseInt(localStorage.getItem("shunkan_best_avg") ?? "9999");
+    if (avg < prev) {
+      localStorage.setItem("shunkan_best_avg", String(avg));
+      setBestAvg(avg);
+    }
     const percentile = calcPercentile(avg);
     const local = getLocalDiagnosis(avg);
     try {
@@ -144,9 +155,14 @@ export default function GamePage() {
         <p className="text-blue-300 mb-8 text-sm text-center">
           画面が光った瞬間にタップ！<br />10回計測してAIが診断
         </p>
-        <p className="text-xs text-blue-500 mb-8 text-center">
+        <p className="text-xs text-blue-500 mb-4 text-center">
           ※ フライングはペナルティ1000ms
         </p>
+        {bestAvg !== null && (
+          <p className="text-xs text-yellow-400 mb-6 text-center">
+            🏆 ベスト: {bestAvg}ms
+          </p>
+        )}
         <button
           onClick={startWaiting}
           className="px-14 py-4 rounded-2xl text-xl font-black transition-all active:scale-95"
