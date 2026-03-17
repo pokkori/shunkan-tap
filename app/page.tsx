@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const STATS = [
   { value: "250ms", sub: "一般成人の平均" },
@@ -21,7 +22,7 @@ export default function HomePage() {
     >
       {/* Hero */}
       <div className="text-center mb-10">
-        <div className="text-7xl mb-5" style={{ filter: "drop-shadow(0 0 32px #facc15)" }}>⚡</div>
+        <Image src="/images/hero.png" alt="瞬感タップ" width={400} height={225} className="mx-auto rounded-2xl mb-5" style={{ filter: "drop-shadow(0 0 32px #facc15)" }} priority />
         <h1
           className="text-5xl sm:text-6xl font-black mb-3 tracking-tight"
           style={{ color: "#fff", textShadow: "0 0 40px rgba(250,204,21,0.6)" }}
@@ -64,7 +65,7 @@ export default function HomePage() {
           textShadow: "0 1px 3px rgba(0,0,0,0.3)",
         }}
       >
-        ⚡ 計測スタート
+        計測スタート
       </Link>
       <p className="text-xs text-slate-500 mt-3">登録不要・無料で計測</p>
 
