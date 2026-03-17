@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import ShareCard from "@/components/ShareCard";
 import { calcPercentile, getLocalDiagnosis, DiagnosisResult } from "@/lib/diagnosis";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 type Phase = "ready" | "waiting" | "flash" | "result" | "done";
 
@@ -21,6 +22,7 @@ export default function GamePage() {
 
   const flashStartRef = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { playFlash, playTap, playFoul, playVictory } = useGameSounds();
 
   const clearTimer = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -35,6 +37,7 @@ export default function GamePage() {
       const color = FLASH_COLORS[Math.floor(Math.random() * FLASH_COLORS.length)];
       setFlashColor(color);
       flashStartRef.current = performance.now();
+      playFlash();
       setPhase("flash");
       // 2秒後に自動で「遅すぎ」
       timeoutRef.current = setTimeout(() => {
@@ -53,12 +56,14 @@ export default function GamePage() {
     if (phase === "waiting") {
       // フライング
       clearTimer();
+      playFoul();
       setIsFoul(true);
       setCurrentMs(1000);
       setPhase("result");
     } else if (phase === "flash") {
       clearTimer();
       const ms = Math.round(performance.now() - flashStartRef.current);
+      playTap(ms);
       recordTime(ms);
     }
   }, [phase, recordTime]);
@@ -79,6 +84,7 @@ export default function GamePage() {
   const finalize = async (allTimes: number[]) => {
     setPhase("done");
     setIsLoading(true);
+    playVictory();
     const valid = allTimes.filter(t => t < 1500);
     const avg = valid.length > 0
       ? Math.round(valid.reduce((a, b) => a + b, 0) / valid.length)
