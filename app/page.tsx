@@ -1,27 +1,37 @@
 import Link from "next/link";
 
 const STATS = [
-  { label: "平均反応速度", value: "250ms", sub: "一般成人の平均" },
-  { label: "トップ層", value: "150ms", sub: "上位1%の壁" },
-  { label: "計測回数", value: "10回", sub: "ブレを除去した精密計測" },
+  { value: "250ms", sub: "一般成人の平均" },
+  { value: "150ms", sub: "上位1%の壁" },
+  { value: "10回", sub: "精密計測回数" },
+];
+
+const HOW_TO = [
+  { icon: "👁️", title: "画面を凝視", desc: "いつ光るかわからない…" },
+  { icon: "⚡", title: "光ったら即タップ！", desc: "0.001秒の差が勝負を決める" },
+  { icon: "🤖", title: "AIが反射神経を診断", desc: "10回の平均でタイプ診断" },
+  { icon: "📤", title: "Xでシェア", desc: "友達と反応速度を競おう" },
 ];
 
 export default function HomePage() {
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-4 py-12"
-      style={{ background: "linear-gradient(160deg, #0a0a1a 0%, #0f1a2e 60%, #0a0a1a 100%)" }}>
-
+    <div
+      className="min-h-dvh flex flex-col items-center justify-center px-4 py-12"
+      style={{ background: "linear-gradient(160deg, #050510 0%, #0a0f2e 60%, #050510 100%)" }}
+    >
       {/* Hero */}
       <div className="text-center mb-10">
-        <div className="text-8xl mb-4" style={{ filter: "drop-shadow(0 0 24px #6ee7f7)" }}>⚡</div>
-        <h1 className="text-4xl sm:text-5xl font-black mb-3"
-          style={{ color: "#6ee7f7", textShadow: "0 0 20px rgba(110,231,247,0.5)" }}>
+        <div className="text-7xl mb-5" style={{ filter: "drop-shadow(0 0 32px #facc15)" }}>⚡</div>
+        <h1
+          className="text-5xl sm:text-6xl font-black mb-3 tracking-tight"
+          style={{ color: "#fff", textShadow: "0 0 40px rgba(250,204,21,0.6)" }}
+        >
           瞬感タップ
         </h1>
-        <p className="text-lg text-blue-200 mb-1 font-bold">
+        <p className="text-base text-yellow-300 font-bold mb-1">
           光った瞬間にタップせよ
         </p>
-        <p className="text-sm text-blue-400">
+        <p className="text-sm text-slate-400">
           あなたの反射神経をミリ秒単位で計測・AIが診断
         </p>
       </div>
@@ -29,41 +39,53 @@ export default function HomePage() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 w-full max-w-sm mb-10">
         {STATS.map((s) => (
-          <div key={s.label}
-            className="rounded-xl p-3 text-center"
-            style={{ background: "rgba(110,231,247,0.08)", border: "1px solid rgba(110,231,247,0.2)" }}>
-            <div className="text-xl font-black" style={{ color: "#6ee7f7" }}>{s.value}</div>
-            <div className="text-xs text-blue-300 mt-1">{s.sub}</div>
+          <div
+            key={s.sub}
+            className="rounded-2xl p-3 text-center"
+            style={{
+              background: "rgba(250,204,21,0.08)",
+              border: "1px solid rgba(250,204,21,0.25)",
+            }}
+          >
+            <div className="text-2xl font-black" style={{ color: "#facc15" }}>{s.value}</div>
+            <div className="text-xs text-slate-400 mt-1">{s.sub}</div>
           </div>
         ))}
       </div>
 
       {/* CTA */}
-      <Link href="/game"
-        className="inline-block px-14 py-4 rounded-2xl text-xl font-black transition-all active:scale-95"
+      <Link
+        href="/game"
+        className="inline-flex items-center gap-2 px-12 py-5 rounded-2xl text-xl font-black transition-all active:scale-95"
         style={{
-          background: "linear-gradient(135deg, #6ee7f7, #3b82f6)",
-          color: "#000",
-          boxShadow: "0 0 30px rgba(110,231,247,0.4)",
-        }}>
-        計測スタート ⚡
+          background: "linear-gradient(135deg, #f59e0b, #ef4444)",
+          color: "#fff",
+          boxShadow: "0 0 40px rgba(245,158,11,0.5), 0 4px 20px rgba(0,0,0,0.4)",
+          textShadow: "0 1px 3px rgba(0,0,0,0.3)",
+        }}
+      >
+        ⚡ 計測スタート
       </Link>
+      <p className="text-xs text-slate-500 mt-3">登録不要・無料で計測</p>
 
       {/* How to play */}
       <div className="mt-10 w-full max-w-sm space-y-3">
-        <h2 className="text-center font-bold text-blue-300 mb-4">遊び方</h2>
-        {[
-          { icon: "👁️", title: "画面を凝視", desc: "いつ光るかわからない…" },
-          { icon: "⚡", title: "光ったら即タップ！", desc: "0.001秒の差が勝負を決める" },
-          { icon: "🤖", title: "AIが反射神経を診断", desc: "10回の平均でタイプ診断" },
-          { icon: "📤", title: "Xでシェア", desc: "友達と反応速度を競おう" },
-        ].map((item, i) => (
-          <div key={i} className="flex gap-3 items-center p-3 rounded-xl"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-            <span className="text-2xl">{item.icon}</span>
+        <h2 className="text-center font-bold text-slate-300 mb-4 text-sm tracking-widest uppercase">
+          遊び方
+        </h2>
+        {HOW_TO.map((item, i) => (
+          <div
+            key={i}
+            className="flex gap-3 items-center p-4 rounded-2xl"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <span className="text-2xl w-8 shrink-0 text-center">{item.icon}</span>
             <div>
-              <div className="font-bold text-blue-200 text-sm">{item.title}</div>
-              <div className="text-xs text-blue-400">{item.desc}</div>
+              <div className="font-bold text-white text-sm">{item.title}</div>
+              <div className="text-xs text-slate-500 mt-0.5">{item.desc}</div>
             </div>
           </div>
         ))}
