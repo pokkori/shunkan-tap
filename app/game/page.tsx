@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import ShareCard from "@/components/ShareCard";
 import { calcPercentile, getLocalDiagnosis, DiagnosisResult } from "@/lib/diagnosis";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
 
 type Phase = "ready" | "waiting" | "flash" | "result" | "done";
 
@@ -27,6 +28,7 @@ function GameInner() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [bestAvg, setBestAvg] = useState<number | null>(null);
+  const [streakData, setStreakData] = useState<StreakData | null>(null);
   const flashStartRef = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { playFlash, playTap, playFoul, playVictory } = useGameSounds();
@@ -34,6 +36,7 @@ function GameInner() {
   useEffect(() => {
     const b = localStorage.getItem("shunkan_best_avg");
     if (b) setBestAvg(parseInt(b));
+    setStreakData(loadStreak("shunkan_tap"));
   }, []);
 
   const clearTimer = () => {
@@ -106,6 +109,8 @@ function GameInner() {
     setIsLoading(true);
     playVictory();
     vibrate([100, 50, 100]);
+    const updatedStreak = updateStreak("shunkan_tap");
+    setStreakData(updatedStreak);
     const valid = allTimes.filter(t => t < 1500);
     const avg = valid.length > 0
       ? Math.round(valid.reduce((a, b) => a + b, 0) / valid.length)
@@ -187,9 +192,18 @@ function GameInner() {
           ※ フライングはペナルティ1000ms
         </p>
         {bestAvg !== null && (
-          <p className="text-xs text-yellow-400 mb-6 text-center">
+          <p className="text-xs text-yellow-400 mb-3 text-center">
             🏆 ベスト: {bestAvg}ms
           </p>
+        )}
+        {streakData && streakData.count > 0 && (
+          <div className="mb-6 px-4 py-2 rounded-xl text-center"
+            style={{ background: "rgba(110,231,247,0.1)", border: "1px solid rgba(110,231,247,0.25)" }}>
+            <p className="text-cyan-300 font-bold text-sm">{streakData.count}日連続プレイ中</p>
+            {getStreakMilestoneMessage(streakData.count) && (
+              <p className="text-yellow-400 text-xs mt-0.5">{getStreakMilestoneMessage(streakData.count)}</p>
+            )}
+          </div>
         )}
         <button
           onClick={startWaiting}
