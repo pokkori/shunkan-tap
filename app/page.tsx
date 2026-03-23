@@ -57,7 +57,8 @@ export default function HomePage() {
       {/* CTA */}
       <Link
         href="/game"
-        className="inline-flex items-center gap-2 px-12 py-5 rounded-2xl text-xl font-black transition-all active:scale-95"
+        className="inline-flex items-center gap-2 px-12 py-5 rounded-2xl text-xl font-black transition-all active:scale-95 min-h-[44px]"
+        aria-label="瞬感タップ反射神経計測を開始する"
         style={{
           background: "linear-gradient(135deg, #f59e0b, #ef4444)",
           color: "#fff",
@@ -94,7 +95,7 @@ export default function HomePage() {
       <footer className="mt-10 text-center text-xs text-slate-600 pb-6">
         <p>© 2026 ポッコリラボ</p>
         <p className="mt-1">
-          <a href="https://twitter.com/levona_design" className="underline hover:text-slate-500">お問い合わせ: X @levona_design</a>
+          <a href="https://twitter.com/levona_design" className="underline hover:text-slate-500" aria-label="Xでお問い合わせ（@levona_design）">お問い合わせ: X @levona_design</a>
         </p>
       </footer>
     </div>

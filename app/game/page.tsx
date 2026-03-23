@@ -164,7 +164,7 @@ function GameInner() {
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center px-4"
         style={{ background: "linear-gradient(160deg, #0a0a1a, #0f1a2e)" }}>
-        <a href="/" className="absolute top-4 left-4 text-blue-400 text-sm">← トップ</a>
+        <a href="/" className="absolute top-4 left-4 text-blue-400 text-sm min-h-[44px] inline-flex items-center" aria-label="トップページに戻る">← トップ</a>
         <div className="text-6xl mb-4" style={{ filter: "drop-shadow(0 0 20px #6ee7f7)" }}>⚡</div>
         <h1 className="text-3xl font-black mb-2" style={{ color: "#6ee7f7" }}>瞬感タップ</h1>
 
@@ -193,7 +193,8 @@ function GameInner() {
         )}
         <button
           onClick={startWaiting}
-          className="px-14 py-4 rounded-2xl text-xl font-black transition-all active:scale-95"
+          className="px-14 py-4 rounded-2xl text-xl font-black transition-all active:scale-95 min-h-[44px]"
+          aria-label={challengeMs !== null ? "友達の挑戦を受けて計測を開始する" : "反射神経計測を開始する"}
           style={{
             background: "linear-gradient(135deg, #f59e0b, #ef4444)",
             color: "#fff",
@@ -233,7 +234,8 @@ function GameInner() {
           <div className="text-blue-500 text-xs mb-6">{round + 1} / {TOTAL_ROUNDS}回目</div>
           <button
             onClick={handleNext}
-            className="px-10 py-3 rounded-xl font-bold text-base transition-all active:scale-95"
+            className="px-10 py-3 rounded-xl font-bold text-base transition-all active:scale-95 min-h-[44px]"
+            aria-label={round + 1 >= TOTAL_ROUNDS ? "AI診断結果を見る" : "次の計測へ進む"}
             style={{ background: "rgba(110,231,247,0.2)", color: "#6ee7f7", border: "1px solid rgba(110,231,247,0.3)" }}>
             {round + 1 >= TOTAL_ROUNDS ? "結果を見る 🤖" : "次へ →"}
           </button>
