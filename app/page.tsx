@@ -39,7 +39,8 @@ export default function HomePage() {
       style={{ background: "linear-gradient(160deg, #050510 0%, #0a0f2e 60%, #050510 100%)" }}
     >
       {/* Hero */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-10 p-6 rounded-3xl"
+        style={{ background: "rgba(250,204,21,0.05)", border: "1px solid rgba(250,204,21,0.12)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
         <Image src="/images/hero.png" alt="瞬感タップ" width={400} height={225} className="mx-auto rounded-2xl mb-5" style={{ filter: "drop-shadow(0 0 32px #facc15)" }} priority />
         <h1
           className="text-5xl sm:text-6xl font-black mb-3 tracking-tight"
@@ -64,6 +65,8 @@ export default function HomePage() {
             style={{
               background: "rgba(250,204,21,0.08)",
               border: "1px solid rgba(250,204,21,0.25)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
             }}
           >
             <div className="text-2xl font-black" style={{ color: "#facc15" }}>{s.value}</div>
@@ -72,7 +75,12 @@ export default function HomePage() {
         ))}
       </div>
 
-      {streak > 1 && <div className="text-center text-sm text-orange-400 mb-4">🔥 {streak}日連続プレイ中!</div>}
+      {streak > 1 && (
+        <div className="text-center text-sm text-orange-400 mb-4 px-4 py-2 rounded-full"
+          style={{ background: "rgba(251,146,60,0.12)", border: "1px solid rgba(251,146,60,0.3)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}>
+          {streak}日連続プレイ中!
+        </div>
+      )}
 
       {/* CTA */}
       <Link
@@ -102,6 +110,8 @@ export default function HomePage() {
             style={{
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(255,255,255,0.07)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
             }}
           >
             <span className="text-2xl w-8 shrink-0 text-center">{item.icon}</span>
