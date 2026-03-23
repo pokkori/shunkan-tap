@@ -12,9 +12,24 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "瞬感タップ",
+  "description": "反射神経を鍛える瞬間タップゲーム",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "url": "https://shunkan-tap.vercel.app",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+  "genre": "Reaction Game"
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </head>
       <body>{children}</body>
     </html>
   );

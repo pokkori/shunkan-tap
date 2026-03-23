@@ -1,3 +1,5 @@
+"use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -15,6 +17,22 @@ const HOW_TO = [
 ];
 
 export default function HomePage() {
+  const [streak, setStreak] = useState(0);
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const data = JSON.parse(localStorage.getItem('shunkan_streak') || '{"count":0,"last":""}');
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (data.last === today) setStreak(data.count);
+    else if (data.last === yesterday) {
+      const updated = { count: data.count + 1, last: today };
+      localStorage.setItem('shunkan_streak', JSON.stringify(updated));
+      setStreak(updated.count);
+    } else {
+      const updated = { count: 1, last: today };
+      localStorage.setItem('shunkan_streak', JSON.stringify(updated));
+      setStreak(1);
+    }
+  }, []);
   return (
     <div
       className="min-h-dvh flex flex-col items-center justify-center px-4 py-12"
@@ -53,6 +71,8 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+
+      {streak > 1 && <div className="text-center text-sm text-orange-400 mb-4">🔥 {streak}日連続プレイ中!</div>}
 
       {/* CTA */}
       <Link
