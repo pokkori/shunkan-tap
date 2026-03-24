@@ -4,12 +4,12 @@ import { NextRequest } from "next/server";
 export const runtime = "edge";
 
 function getRankInfo(avgMs: number): { rank: string; emoji: string; type: string } {
-  if (avgMs < 170) return { rank: "S+", emoji: "🏆", type: "超人型アスリート" };
-  if (avgMs < 200) return { rank: "S", emoji: "🎮", type: "プロゲーマー型" };
-  if (avgMs < 230) return { rank: "A", emoji: "🦅", type: "鋭敏な野生型" };
-  if (avgMs < 260) return { rank: "B", emoji: "⚖️", type: "バランス感覚型" };
-  if (avgMs < 300) return { rank: "C", emoji: "🐢", type: "じっくり慎重型" };
-  return { rank: "D", emoji: "🌸", type: "マイペース自由型" };
+  if (avgMs < 170) return { rank: "S+", emoji: "", type: "超人型アスリート" };
+  if (avgMs < 200) return { rank: "S", emoji: "", type: "プロゲーマー型" };
+  if (avgMs < 230) return { rank: "A", emoji: "", type: "鋭敏な野生型" };
+  if (avgMs < 260) return { rank: "B", emoji: "️", type: "バランス感覚型" };
+  if (avgMs < 300) return { rank: "C", emoji: "", type: "じっくり慎重型" };
+  return { rank: "D", emoji: "", type: "マイペース自由型" };
 }
 
 export async function GET(request: NextRequest) {
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
             fontFamily: "sans-serif",
           }}
         >
-          <div style={{ fontSize: 120, marginBottom: 20 }}>⚡</div>
+          <div style={{ fontSize: 120, marginBottom: 20 }}></div>
           <div style={{ fontSize: 72, fontWeight: 900, color: "#fff", marginBottom: 12 }}>
             瞬感タップ
           </div>
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
             marginTop: 8,
           }}
         >
-          {isChallenge ? "⚔️ この記録に挑戦できるか？" : "⚡ 瞬感タップ"}
+          {isChallenge ? "️ この記録に挑戦できるか？" : " 瞬感タップ"}
         </div>
       </div>
     ),

@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 - ランク: ${rank}
 - タイプ: ${type}
 
-「あなたは◯◯です！」のような断言系で、ポジティブに、絵文字1〜2個を使って。
+「あなたはです！」のような断言系で、ポジティブに、絵文字1〜2個を使って。
 50文字以内で。`;
 
     const message = await client.messages.create({
@@ -33,6 +33,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ comment });
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ comment: "素晴らしい反射神経です！⚡" });
+    return NextResponse.json({ comment: "素晴らしい反射神経です！" });
   }
 }

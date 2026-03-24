@@ -19,13 +19,13 @@ export default function ShareCard({ result, times, challengeMs }: Props) {
   const challengeUrl = `${baseUrl}/game?challenge=${result.avgMs}`;
 
   const shareText = isChallenge
-    ? `⚡ 瞬感タップで友達に挑戦！
+    ? ` 瞬感タップで友達に挑戦！
 友達: ${challengeMs}ms → 自分: ${result.avgMs}ms
-${won ? `✅ ${diff}ms速い！勝利！` : `❌ ${diff}ms差で負け…`}
+${won ? ` ${diff}ms速い！勝利！` : ` ${diff}ms差で負け…`}
 ランク: ${result.rank} ${result.emoji} ${result.type}
 #瞬感タップ #反射神経
 次はあなたの番→ ${challengeUrl}`
-    : `⚡ 瞬感タップで反応速度を計測！
+    : ` 瞬感タップで反応速度を計測！
 平均 ${result.avgMs}ms（上位${100 - result.percentile}%）
 ランク: ${result.rank} ${result.emoji} ${result.type}
 ${result.aiComment}
@@ -65,7 +65,7 @@ ${result.aiComment}
             </div>
           </div>
           <div className="text-xl font-black" style={{ color: won ? "#00ff88" : "#ef4444" }}>
-            {won ? `✅ 勝ち！（${diff}ms速い！）` : `❌ 負け（${diff}ms差）`}
+            {won ? ` 勝ち！（${diff}ms速い！）` : ` 負け（${diff}ms差）`}
           </div>
         </div>
       )}
@@ -87,7 +87,7 @@ ${result.aiComment}
             ランク {result.rank}
           </div>
           <div className="text-lg font-bold text-white mb-1">{result.type}</div>
-          <div className="text-sm text-blue-300">上位 {100 - result.percentile}% 🎯</div>
+          <div className="text-sm text-blue-300">上位 {100 - result.percentile}% </div>
         </div>
 
         {/* AI comment */}
@@ -133,7 +133,7 @@ ${result.aiComment}
           onClick={() => window.location.reload()}
           className="w-full py-3 rounded-xl font-bold text-base transition-all active:scale-95"
           style={{ background: "rgba(110,231,247,0.15)", color: "#6ee7f7", border: "1px solid rgba(110,231,247,0.3)" }}>
-          もう一度測る ⚡
+          もう一度測る 
         </button>
       </div>
     </div>

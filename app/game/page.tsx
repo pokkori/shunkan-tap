@@ -131,7 +131,7 @@ function GameInner() {
       const data = await res.json();
       setDiagnosis({ avgMs: avg, percentile, ...local, aiComment: data.comment });
     } catch {
-      setDiagnosis({ avgMs: avg, percentile, ...local, aiComment: "素晴らしい反射神経です！⚡" });
+      setDiagnosis({ avgMs: avg, percentile, ...local, aiComment: "素晴らしい反射神経です！" });
     }
     setIsLoading(false);
   };
@@ -154,10 +154,10 @@ function GameInner() {
       <div className="min-h-dvh flex flex-col items-center justify-center px-4 py-12"
         style={{ background: "linear-gradient(160deg, #0a0a1a, #0f1a2e)" }}>
         <h2 className="text-2xl font-black mb-6" style={{ color: "#6ee7f7" }}>
-          ⚡ 計測完了！
+           計測完了！
         </h2>
         {isLoading ? (
-          <div className="text-blue-300 animate-pulse text-lg">🤖 AIが診断中...</div>
+          <div className="text-blue-300 animate-pulse text-lg"> AIが診断中...</div>
         ) : diagnosis ? (
           <ShareCard result={diagnosis} times={times} challengeMs={challengeMs} />
         ) : null}
@@ -170,7 +170,7 @@ function GameInner() {
       <div className="min-h-dvh flex flex-col items-center justify-center px-4"
         style={{ background: "linear-gradient(160deg, #0a0a1a, #0f1a2e)" }}>
         <a href="/" className="absolute top-4 left-4 text-blue-400 text-sm min-h-[44px] inline-flex items-center" aria-label="トップページに戻る">← トップ</a>
-        <div className="text-6xl mb-4" style={{ filter: "drop-shadow(0 0 20px #6ee7f7)" }}>⚡</div>
+        <div className="text-6xl mb-4" style={{ filter: "drop-shadow(0 0 20px #6ee7f7)" }}></div>
         <h1 className="text-3xl font-black mb-2" style={{ color: "#6ee7f7" }}>瞬感タップ</h1>
 
         {challengeMs !== null && (
@@ -193,7 +193,7 @@ function GameInner() {
         </p>
         {bestAvg !== null && (
           <p className="text-xs text-yellow-400 mb-3 text-center">
-            🏆 ベスト: {bestAvg}ms
+             ベスト: {bestAvg}ms
           </p>
         )}
         {streakData && streakData.count > 0 && (
@@ -215,7 +215,7 @@ function GameInner() {
             boxShadow: "0 0 30px rgba(245,158,11,0.5)",
             textShadow: "0 1px 3px rgba(0,0,0,0.3)",
           }}>
-          {challengeMs !== null ? "挑戦を受ける ⚔️" : "計測スタート ⚡"}
+          {challengeMs !== null ? "挑戦を受ける ️" : "計測スタート "}
         </button>
       </div>
     );
@@ -228,20 +228,20 @@ function GameInner() {
         <div className="text-center bounce-in">
           {isFoul ? (
             <>
-              <div className="text-5xl mb-3">💥</div>
+              <div className="text-5xl mb-3"></div>
               <div className="text-2xl font-black text-red-400 mb-2">フライング！</div>
               <div className="text-blue-400 text-sm mb-6">光る前にタップしました</div>
               <div className="text-4xl font-black text-red-400 mb-1">1000ms</div>
             </>
           ) : (
             <>
-              <div className="text-5xl mb-3">⚡</div>
+              <div className="text-5xl mb-3"></div>
               <div className="text-5xl font-black mb-2"
                 style={{ color: (currentMs ?? 999) < 200 ? "#00ff88" : (currentMs ?? 999) < 300 ? "#6ee7f7" : "#f59e0b" }}>
                 {currentMs}ms
               </div>
               <div className="text-blue-300 text-sm mb-6">
-                {(currentMs ?? 999) < 200 ? "⚡ 超高速！" : (currentMs ?? 999) < 260 ? "👍 Good!" : "がんばれ！"}
+                {(currentMs ?? 999) < 200 ? " 超高速！" : (currentMs ?? 999) < 260 ? " Good!" : "がんばれ！"}
               </div>
             </>
           )}
@@ -251,7 +251,7 @@ function GameInner() {
             className="px-10 py-3 rounded-xl font-bold text-base transition-all active:scale-95 min-h-[44px]"
             aria-label={round + 1 >= TOTAL_ROUNDS ? "AI診断結果を見る" : "次の計測へ進む"}
             style={{ background: "rgba(110,231,247,0.2)", color: "#6ee7f7", border: "1px solid rgba(110,231,247,0.3)" }}>
-            {round + 1 >= TOTAL_ROUNDS ? "結果を見る 🤖" : "次へ →"}
+            {round + 1 >= TOTAL_ROUNDS ? "結果を見る " : "次へ →"}
           </button>
         </div>
       </div>
@@ -272,14 +272,14 @@ function GameInner() {
       <div className="text-center pointer-events-none">
         {phase === "waiting" ? (
           <>
-            <div className="text-6xl mb-4 opacity-50">👁️</div>
+            <div className="text-6xl mb-4 opacity-50">️</div>
             <div className="text-xl font-bold text-blue-300 mb-2">準備して...</div>
             <div className="text-sm text-blue-500">{round + 1} / {TOTAL_ROUNDS}回目</div>
             <div className="mt-8 text-xs text-blue-700">光ったら即タップ！</div>
           </>
         ) : (
           <>
-            <div className="text-7xl mb-4 flash-anim">⚡</div>
+            <div className="text-7xl mb-4 flash-anim"></div>
             <div className="text-3xl font-black text-black mb-2">今すぐタップ！</div>
             <div className="text-sm text-black opacity-60">{round + 1} / {TOTAL_ROUNDS}回目</div>
           </>

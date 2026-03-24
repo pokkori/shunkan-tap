@@ -24,10 +24,10 @@ export function calcPercentile(avgMs: number): number {
 }
 
 export function getLocalDiagnosis(avgMs: number): { rank: string; type: string; emoji: string } {
-  if (avgMs < 170) return { rank: "S+", type: "超人型アスリート", emoji: "🏆" };
-  if (avgMs < 200) return { rank: "S", type: "プロゲーマー型", emoji: "🎮" };
-  if (avgMs < 230) return { rank: "A", type: "鋭敏な野生型", emoji: "🦅" };
-  if (avgMs < 260) return { rank: "B", type: "バランス感覚型", emoji: "⚖️" };
-  if (avgMs < 300) return { rank: "C", type: "じっくり慎重型", emoji: "🐢" };
-  return { rank: "D", type: "マイペース自由型", emoji: "🌸" };
+  if (avgMs < 170) return { rank: "S+", type: "超人型アスリート", emoji: "" };
+  if (avgMs < 200) return { rank: "S", type: "プロゲーマー型", emoji: "" };
+  if (avgMs < 230) return { rank: "A", type: "鋭敏な野生型", emoji: "" };
+  if (avgMs < 260) return { rank: "B", type: "バランス感覚型", emoji: "️" };
+  if (avgMs < 300) return { rank: "C", type: "じっくり慎重型", emoji: "" };
+  return { rank: "D", type: "マイペース自由型", emoji: "" };
 }

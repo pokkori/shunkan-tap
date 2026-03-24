@@ -10,10 +10,10 @@ const STATS = [
 ];
 
 const HOW_TO = [
-  { icon: "👁️", title: "画面を凝視", desc: "いつ光るかわからない…" },
-  { icon: "⚡", title: "光ったら即タップ！", desc: "0.001秒の差が勝負を決める" },
-  { icon: "🤖", title: "AIが反射神経を診断", desc: "10回の平均でタイプ診断" },
-  { icon: "📤", title: "Xでシェア", desc: "友達と反応速度を競おう" },
+  { icon: "️", title: "画面を凝視", desc: "いつ光るかわからない…" },
+  { icon: "", title: "光ったら即タップ！", desc: "0.001秒の差が勝負を決める" },
+  { icon: "", title: "AIが反射神経を診断", desc: "10回の平均でタイプ診断" },
+  { icon: "", title: "Xでシェア", desc: "友達と反応速度を競おう" },
 ];
 
 export default function HomePage() {
@@ -40,7 +40,7 @@ export default function HomePage() {
     >
       {/* Hero */}
       <div className="text-center mb-10 p-6 rounded-3xl"
-        style={{ background: "rgba(250,204,21,0.05)", border: "1px solid rgba(250,204,21,0.12)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+        style={{ background: "rgba(255,255,255,0.08)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(250,204,21,0.2)", borderRadius: "24px" }}>
         <Image src="/images/hero.png" alt="瞬感タップ" width={400} height={225} className="mx-auto rounded-2xl mb-5" style={{ filter: "drop-shadow(0 0 32px #facc15)" }} priority />
         <h1
           className="text-5xl sm:text-6xl font-black mb-3 tracking-tight"
@@ -63,10 +63,11 @@ export default function HomePage() {
             key={s.sub}
             className="rounded-2xl p-3 text-center"
             style={{
-              background: "rgba(250,204,21,0.08)",
-              border: "1px solid rgba(250,204,21,0.25)",
+              background: "rgba(255,255,255,0.08)",
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
+              border: "1px solid rgba(250,204,21,0.25)",
+              borderRadius: "16px",
             }}
           >
             <div className="text-2xl font-black" style={{ color: "#facc15" }}>{s.value}</div>
@@ -108,10 +109,11 @@ export default function HomePage() {
             key={i}
             className="flex gap-3 items-center p-4 rounded-2xl"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "rgba(255,255,255,0.08)",
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: "16px",
             }}
           >
             <span className="text-2xl w-8 shrink-0 text-center">{item.icon}</span>
@@ -128,8 +130,8 @@ export default function HomePage() {
           <a href="https://twitter.com/levona_design" className="underline hover:text-slate-500" aria-label="Xでお問い合わせ（@levona_design）">お問い合わせ: X @levona_design</a>
         </p>
         <div className="mt-2 space-x-4">
-          <a href="/privacy" className="underline hover:text-slate-500" aria-label="プライバシーポリシーを見る">プライバシーポリシー</a>
-          <a href="/legal" className="underline hover:text-slate-500" aria-label="特定商取引法に基づく表記を見る">特商法表記</a>
+          <a href="/privacy" aria-label="プライバシーポリシーを見る" className="underline hover:text-slate-500" >プライバシーポリシー</a>
+          <a href="/legal" aria-label="特定商取引法に基づく表示" className="underline hover:text-slate-500" >特商法表記</a>
         </div>
       </footer>
     </div>
