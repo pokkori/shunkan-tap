@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import OrbBackground from "@/components/OrbBackground";
 import "./globals.css";
 
@@ -54,8 +56,43 @@ const jsonLd = {
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "瞬感タップはどうやって遊ぶの？",
-          "acceptedAnswer": { "@type": "Answer", "text": "スタートを押して待機。画面が光った瞬間にタップするだけ。反応時間をミリ秒単位で計測します。5回の平均値でAIが診断を行います。スマホ・PCどちらでも無料で遊べます。" }
+          "name": "このゲームは無料ですか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "はい、完全無料で遊べます。アカウント登録も不要です。ブラウザを開くだけですぐに反応速度を測定できます。" }
+        },
+        {
+          "@type": "Question",
+          "name": "スマホで遊べますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "はい、スマホ・タブレット・PCすべてに対応しています。iOS Safari・Android Chromeどちらでも正常に動作します。タップ操作でスムーズに反応速度を計測できます。" }
+        },
+        {
+          "@type": "Question",
+          "name": "スコアはどう計算されますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "画面が光ってからタップするまでの時間をミリ秒単位で計測します。5回プレイした結果の平均値がスコアとなり、AIが診断コメントを提供します。フライングは無効となります。" }
+        },
+        {
+          "@type": "Question",
+          "name": "反射神経は鍛えられますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "はい。継続的なトレーニングで反応速度の向上が期待できます。毎日練習することで神経伝達のスピードが改善し、ゲームやスポーツのパフォーマンス向上にもつながります。" }
+        },
+        {
+          "@type": "Question",
+          "name": "子供でも遊べますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "はい、お子様でも安心して遊べます。シンプルな操作で反応速度を楽しく測定できます。家族で反応速度を競い合うのもおすすめです。" }
+        },
+        {
+          "@type": "Question",
+          "name": "難易度の設定はありますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "現在は標準モードのみです。ランダムなタイミングで画面が光るため、毎回違う難しさがあります。今後、ウェイト時間やラウンド数のカスタマイズ機能を追加予定です。" }
+        },
+        {
+          "@type": "Question",
+          "name": "BGMはオフにできますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "はい、ゲーム画面上の音量ボタンでBGM・効果音のオン/オフを切り替えられます。静かな環境や公共の場でも快適にプレイできます。" }
+        },
+        {
+          "@type": "Question",
+          "name": "最高スコアの保存方法は？",
+          "acceptedAnswer": { "@type": "Answer", "text": "自己ベストはブラウザのローカルストレージに自動保存されます。同じブラウザ・同じ端末であれば次回も記録が残ります。スコアカード画像をXでシェアして記録を残すこともできます。" }
         },
         {
           "@type": "Question",
@@ -64,18 +101,8 @@ const jsonLd = {
         },
         {
           "@type": "Question",
-          "name": "スコアはSNSでシェアできますか？",
-          "acceptedAnswer": { "@type": "Answer", "text": "はい。測定結果のスコアカードをXでシェアできます。友達と反応速度を競い合いましょう。シェアボタンから画像付き投稿が可能です。" }
-        },
-        {
-          "@type": "Question",
-          "name": "練習で反応速度は向上しますか？",
-          "acceptedAnswer": { "@type": "Answer", "text": "はい。毎日練習することで反応速度の向上が期待できます。瞬感タップで継続的にトレーニングしましょう。ゲームやスポーツのパフォーマンス向上にもつながります。" }
-        },
-        {
-          "@type": "Question",
-          "name": "ランキングや記録の保存はできますか？",
-          "acceptedAnswer": { "@type": "Answer", "text": "自己ベストはブラウザのローカルストレージに自動保存されます。毎回プレイするたびに記録更新を目指せます。デイリーランキング機能も実装予定です。" }
+          "name": "ランキングや記録の共有はできますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "自己ベストはブラウザに保存されます。また、スコアカード画像をXでシェアして友達と反応速度を競い合えます。デイリーランキング機能も実装予定です。" }
         },
       ],
     },
@@ -90,8 +117,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${notoSansJP.className} text-slate-100 antialiased`}>
         <OrbBackground />
+        {(process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? 'ca-pub-XXXXXXXX') !== 'ca-pub-XXXXXXXX' && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
