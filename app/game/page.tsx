@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import ShareCard from "@/components/ShareCard";
 import OrbBackground from "@/components/OrbBackground";
 import TapMascot, { type TapPose } from "@/components/TapMascot";
+import ScorePopup from "@/components/ScorePopup";
 import { calcPercentile, getLocalDiagnosis, DiagnosisResult } from "@/lib/diagnosis";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { useTapBGM } from "@/hooks/useTapBGM";
@@ -33,6 +34,8 @@ function GameInner() {
 
   const [bestAvg, setBestAvg] = useState<number | null>(null);
   const [streakData, setStreakData] = useState<StreakData | null>(null);
+  const [scorePopups, setScorePopups] = useState<{ id: number; score: number; x: number; y: number }[]>([]);
+  const popupIdRef = useRef(0);
   const flashStartRef = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { playFlash, playTap, playFoul, playVictory } = useGameSounds();
@@ -96,6 +99,12 @@ function GameInner() {
       const ms = Math.round(performance.now() - flashStartRef.current);
       playTap(ms);
       playTapHit(ms);
+      // ScorePopup: 速いほど高得点
+      const pts = ms < 200 ? 300 : ms < 300 ? 200 : ms < 500 ? 100 : 50;
+      const pid = popupIdRef.current++;
+      const px = window.innerWidth / 2;
+      const py = window.innerHeight / 2;
+      setScorePopups(prev => [...prev, { id: pid, score: pts, x: px, y: py }]);
       recordTime(ms);
     }
   }, [phase, recordTime, playFoul, playFoulSound, playTap, playTapHit]);
@@ -247,12 +256,7 @@ function GameInner() {
           )}
           {streakData && streakData.count > 0 && (
             <div
-              className="mb-6 px-4 py-2 rounded-xl text-center"
-              style={{
-                background: "rgba(234,179,8,0.08)",
-                backdropFilter: "blur(8px)",
-                border: "1px solid rgba(234,179,8,0.25)",
-              }}
+              className="glass-dark mb-6 px-4 py-2 rounded-xl text-center"
             >
               <p className="text-yellow-300 font-bold text-sm">{streakData.count}日連続プレイ中</p>
               {getStreakMilestoneMessage(streakData.count) && (
@@ -351,6 +355,15 @@ function GameInner() {
       onTouchStart={(e) => { e.preventDefault(); handleTap(); }}
     >
       {phase === "waiting" && <OrbBackground />}
+      {scorePopups.map(p => (
+        <ScorePopup
+          key={p.id}
+          score={p.score}
+          x={p.x}
+          y={p.y}
+          onDone={() => setScorePopups(prev => prev.filter(s => s.id !== p.id))}
+        />
+      ))}
       <div className="text-center pointer-events-none relative z-10">
         {phase === "waiting" ? (
           <>
