@@ -3,8 +3,11 @@
 import { useState, useRef, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ShareCard from "@/components/ShareCard";
+import OrbBackground from "@/components/OrbBackground";
+import TapMascot, { type TapPose } from "@/components/TapMascot";
 import { calcPercentile, getLocalDiagnosis, DiagnosisResult } from "@/lib/diagnosis";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { useTapBGM } from "@/hooks/useTapBGM";
 import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
 
 type Phase = "ready" | "waiting" | "flash" | "result" | "done";
@@ -26,12 +29,14 @@ function GameInner() {
   const [flashColor, setFlashColor] = useState(FLASH_COLORS[0]);
   const [diagnosis, setDiagnosis] = useState<DiagnosisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [mascotPose, setMascotPose] = useState<TapPose>("idle");
 
   const [bestAvg, setBestAvg] = useState<number | null>(null);
   const [streakData, setStreakData] = useState<StreakData | null>(null);
   const flashStartRef = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { playFlash, playTap, playFoul, playVictory } = useGameSounds();
+  const { startBGM, stopBGM, playTapHit, playFoulSound, playCombo } = useTapBGM();
 
   useEffect(() => {
     const b = localStorage.getItem("shunkan_best_avg");
@@ -51,6 +56,7 @@ function GameInner() {
 
   const startWaiting = useCallback(() => {
     setPhase("waiting");
+    setMascotPose("ready");
     setIsFoul(false);
     setCurrentMs(null);
     const delay = 1000 + Math.random() * 3000;
@@ -61,7 +67,7 @@ function GameInner() {
       playFlash();
       vibrate(50);
       setPhase("flash");
-      // 2秒後に自動で「遅すぎ」
+      setMascotPose("fast");
       timeoutRef.current = setTimeout(() => {
         recordTime(2000);
       }, 2000);
@@ -72,24 +78,27 @@ function GameInner() {
     clearTimer();
     setCurrentMs(ms);
     setPhase("result");
+    setMascotPose("idle");
   }, []);
 
   const handleTap = useCallback(() => {
     if (phase === "waiting") {
-      // フライング
       clearTimer();
       playFoul();
+      playFoulSound();
       vibrate([100, 50, 100]);
       setIsFoul(true);
+      setMascotPose("miss");
       setCurrentMs(1000);
       setPhase("result");
     } else if (phase === "flash") {
       clearTimer();
       const ms = Math.round(performance.now() - flashStartRef.current);
       playTap(ms);
+      playTapHit(ms);
       recordTime(ms);
     }
-  }, [phase, recordTime]);
+  }, [phase, recordTime, playFoul, playFoulSound, playTap, playTapHit]);
 
   const handleNext = useCallback(() => {
     const ms = currentMs ?? 1000;
@@ -107,7 +116,9 @@ function GameInner() {
   const finalize = async (allTimes: number[]) => {
     setPhase("done");
     setIsLoading(true);
+    setMascotPose("fast");
     playVictory();
+    playCombo();
     vibrate([100, 50, 100]);
     const updatedStreak = updateStreak("shunkan_tap");
     setStreakData(updatedStreak);
@@ -134,11 +145,17 @@ function GameInner() {
       setDiagnosis({ avgMs: avg, percentile, ...local, aiComment: "素晴らしい反射神経です！" });
     }
     setIsLoading(false);
+    stopBGM();
   };
 
-  useEffect(() => { return () => clearTimer(); }, []);
+  useEffect(() => {
+    return () => {
+      clearTimer();
+      stopBGM();
+    };
+  }, [stopBGM]);
 
-  // Keyboard support
+  // キーボード操作
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.code === "Space") { e.preventDefault(); handleTap(); }
@@ -147,111 +164,175 @@ function GameInner() {
     return () => window.removeEventListener("keydown", handler);
   }, [handleTap]);
 
-  const bgColor = phase === "flash" ? flashColor : phase === "waiting" ? "#0a0a1a" : "#0a0a1a";
+  const bgColor = phase === "flash" ? flashColor : "#0f0a00";
 
   if (phase === "done") {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center px-4 py-12"
-        style={{ background: "linear-gradient(160deg, #0a0a1a, #0f1a2e)" }}>
-        <h2 className="text-2xl font-black mb-6" style={{ color: "#6ee7f7" }}>
-           計測完了！
-        </h2>
-        {isLoading ? (
-          <div className="text-blue-300 animate-pulse text-lg"> AIが診断中...</div>
-        ) : diagnosis ? (
-          <ShareCard result={diagnosis} times={times} challengeMs={challengeMs} />
-        ) : null}
+      <div
+        className="min-h-dvh flex flex-col items-center justify-center px-4 py-12"
+        style={{ background: "linear-gradient(160deg, #0f0a00, #1a1000, #0f0a00)" }}
+      >
+        <OrbBackground />
+        <div className="relative z-10 w-full flex flex-col items-center">
+          <div className="flex justify-center mb-4">
+            <TapMascot pose={mascotPose} size={72} />
+          </div>
+          <h2
+            className="text-2xl font-black mb-6"
+            style={{ color: "#fbbf24", textShadow: "0 0 16px rgba(234,179,8,0.7)" }}
+          >
+            計測完了！
+          </h2>
+          {isLoading ? (
+            <div className="text-yellow-300 animate-pulse text-lg">AIが診断中...</div>
+          ) : diagnosis ? (
+            <ShareCard result={diagnosis} times={times} challengeMs={challengeMs} />
+          ) : null}
+        </div>
       </div>
     );
   }
 
   if (phase === "ready") {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center px-4"
-        style={{ background: "linear-gradient(160deg, #0a0a1a, #0f1a2e)" }}>
-        <a href="/" className="absolute top-4 left-4 text-blue-400 text-sm min-h-[44px] inline-flex items-center" aria-label="トップページに戻る">← トップ</a>
-        <div className="text-6xl mb-4" style={{ filter: "drop-shadow(0 0 20px #6ee7f7)" }}></div>
-        <h1 className="text-3xl font-black mb-2" style={{ color: "#6ee7f7" }}>瞬感タップ</h1>
-
-        {challengeMs !== null && (
-          <div className="rounded-2xl p-4 mb-4 text-center w-full max-w-xs"
-            style={{
-              background: "rgba(239,68,68,0.15)",
-              border: "1px solid rgba(239,68,68,0.4)",
-            }}>
-            <div className="text-sm text-red-300 mb-1">友達からの挑戦状！</div>
-            <div className="text-3xl font-black text-red-400">{challengeMs}ms</div>
-            <div className="text-xs text-red-300 mt-1">この記録を超えろ！</div>
+      <div
+        className="min-h-dvh flex flex-col items-center justify-center px-4"
+        style={{ background: "linear-gradient(160deg, #0f0a00, #1a1000, #0f0a00)" }}
+      >
+        <OrbBackground />
+        <a
+          href="/"
+          className="absolute top-4 left-4 text-yellow-400 text-sm min-h-[44px] inline-flex items-center z-10"
+          aria-label="トップページに戻る"
+        >
+          ← トップ
+        </a>
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="mb-4">
+            <TapMascot pose="idle" size={80} />
           </div>
-        )}
+          <h1
+            className="text-3xl font-black mb-2"
+            style={{ color: "#fbbf24", textShadow: "0 0 20px rgba(234,179,8,0.8)" }}
+          >
+            瞬感タップ
+          </h1>
 
-        <p className="text-blue-300 mb-8 text-sm text-center">
-          画面が光った瞬間にタップ！<br />10回計測してAIが診断
-        </p>
-        <p className="text-xs text-blue-500 mb-4 text-center">
-          ※ フライングはペナルティ1000ms
-        </p>
-        {bestAvg !== null && (
-          <p className="text-xs text-yellow-400 mb-3 text-center">
-             ベスト: {bestAvg}ms
+          {challengeMs !== null && (
+            <div
+              className="rounded-2xl p-4 mb-4 text-center w-full max-w-xs"
+              style={{
+                background: "rgba(239,68,68,0.12)",
+                backdropFilter: "blur(12px)",
+                border: "1px solid rgba(239,68,68,0.35)",
+                boxShadow: "0 0 20px rgba(239,68,68,0.1)",
+              }}
+            >
+              <div className="text-sm text-red-300 mb-1">友達からの挑戦状！</div>
+              <div className="text-3xl font-black text-red-400">{challengeMs}ms</div>
+              <div className="text-xs text-red-300 mt-1">この記録を超えろ！</div>
+            </div>
+          )}
+
+          <p className="text-yellow-200 mb-8 text-sm text-center opacity-80">
+            画面が光った瞬間にタップ！<br />10回計測してAIが診断
           </p>
-        )}
-        {streakData && streakData.count > 0 && (
-          <div className="mb-6 px-4 py-2 rounded-xl text-center"
-            style={{ background: "rgba(110,231,247,0.1)", border: "1px solid rgba(110,231,247,0.25)" }}>
-            <p className="text-cyan-300 font-bold text-sm">{streakData.count}日連続プレイ中</p>
-            {getStreakMilestoneMessage(streakData.count) && (
-              <p className="text-yellow-400 text-xs mt-0.5">{getStreakMilestoneMessage(streakData.count)}</p>
-            )}
-          </div>
-        )}
-        <button
-          onClick={startWaiting}
-          className="px-14 py-4 rounded-2xl text-xl font-black transition-all active:scale-95 min-h-[44px]"
-          aria-label={challengeMs !== null ? "友達の挑戦を受けて計測を開始する" : "反射神経計測を開始する"}
-          style={{
-            background: "linear-gradient(135deg, #f59e0b, #ef4444)",
-            color: "#fff",
-            boxShadow: "0 0 30px rgba(245,158,11,0.5)",
-            textShadow: "0 1px 3px rgba(0,0,0,0.3)",
-          }}>
-          {challengeMs !== null ? "挑戦を受ける ️" : "計測スタート "}
-        </button>
+          <p className="text-xs text-yellow-600 mb-4 text-center">
+            ※ フライングはペナルティ1000ms
+          </p>
+          {bestAvg !== null && (
+            <p className="text-xs text-yellow-400 mb-3 text-center">
+              ベスト: {bestAvg}ms
+            </p>
+          )}
+          {streakData && streakData.count > 0 && (
+            <div
+              className="mb-6 px-4 py-2 rounded-xl text-center"
+              style={{
+                background: "rgba(234,179,8,0.08)",
+                backdropFilter: "blur(8px)",
+                border: "1px solid rgba(234,179,8,0.25)",
+              }}
+            >
+              <p className="text-yellow-300 font-bold text-sm">{streakData.count}日連続プレイ中</p>
+              {getStreakMilestoneMessage(streakData.count) && (
+                <p className="text-yellow-400 text-xs mt-0.5">{getStreakMilestoneMessage(streakData.count)}</p>
+              )}
+            </div>
+          )}
+          <button
+            onClick={() => { startBGM(); startWaiting(); }}
+            className="px-14 py-4 rounded-2xl text-xl font-black transition-all active:scale-95 min-h-[44px]"
+            aria-label={challengeMs !== null ? "友達の挑戦を受けて計測を開始する" : "反射神経計測を開始する"}
+            style={{
+              background: "linear-gradient(135deg, #f59e0b, #ef4444)",
+              color: "#fff",
+              boxShadow: "0 0 30px rgba(245,158,11,0.6)",
+              textShadow: "0 1px 3px rgba(0,0,0,0.3)",
+            }}
+          >
+            {challengeMs !== null ? "挑戦を受ける" : "計測スタート"}
+          </button>
+        </div>
       </div>
     );
   }
 
   if (phase === "result") {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center px-4"
-        style={{ background: "#0a0a1a" }}>
-        <div className="text-center bounce-in">
+      <div
+        className="min-h-dvh flex flex-col items-center justify-center px-4"
+        style={{ background: "linear-gradient(160deg, #0f0a00, #1a1000)" }}
+      >
+        <OrbBackground />
+        <div className="text-center bounce-in relative z-10">
           {isFoul ? (
             <>
-              <div className="text-5xl mb-3"></div>
+              <div className="flex justify-center mb-3">
+                <TapMascot pose="miss" size={64} />
+              </div>
               <div className="text-2xl font-black text-red-400 mb-2">フライング！</div>
-              <div className="text-blue-400 text-sm mb-6">光る前にタップしました</div>
-              <div className="text-4xl font-black text-red-400 mb-1">1000ms</div>
+              <div className="text-yellow-400 text-sm mb-6">光る前にタップしました</div>
+              <div
+                className="text-4xl font-black text-red-400 mb-1"
+                style={{ textShadow: "0 0 12px rgba(239,68,68,0.6)" }}
+              >
+                1000ms
+              </div>
             </>
           ) : (
             <>
-              <div className="text-5xl mb-3"></div>
-              <div className="text-5xl font-black mb-2"
-                style={{ color: (currentMs ?? 999) < 200 ? "#00ff88" : (currentMs ?? 999) < 300 ? "#6ee7f7" : "#f59e0b" }}>
+              <div className="flex justify-center mb-3">
+                <TapMascot pose={(currentMs ?? 999) < 250 ? "fast" : "idle"} size={64} />
+              </div>
+              <div
+                className="text-5xl font-black mb-2"
+                style={{
+                  color: (currentMs ?? 999) < 200 ? "#00ff88" : (currentMs ?? 999) < 300 ? "#6ee7f7" : "#f59e0b",
+                  textShadow: `0 0 16px ${(currentMs ?? 999) < 200 ? "rgba(0,255,136,0.6)" : "rgba(234,179,8,0.6)"}`,
+                }}
+              >
                 {currentMs}ms
               </div>
-              <div className="text-blue-300 text-sm mb-6">
-                {(currentMs ?? 999) < 200 ? " 超高速！" : (currentMs ?? 999) < 260 ? " Good!" : "がんばれ！"}
+              <div className="text-yellow-300 text-sm mb-6">
+                {(currentMs ?? 999) < 200 ? "超高速！" : (currentMs ?? 999) < 260 ? "Good!" : "がんばれ！"}
               </div>
             </>
           )}
-          <div className="text-blue-500 text-xs mb-6">{round + 1} / {TOTAL_ROUNDS}回目</div>
+          <div className="text-yellow-600 text-xs mb-6">{round + 1} / {TOTAL_ROUNDS}回目</div>
           <button
             onClick={handleNext}
             className="px-10 py-3 rounded-xl font-bold text-base transition-all active:scale-95 min-h-[44px]"
             aria-label={round + 1 >= TOTAL_ROUNDS ? "AI診断結果を見る" : "次の計測へ進む"}
-            style={{ background: "rgba(110,231,247,0.2)", color: "#6ee7f7", border: "1px solid rgba(110,231,247,0.3)" }}>
-            {round + 1 >= TOTAL_ROUNDS ? "結果を見る " : "次へ →"}
+            style={{
+              background: "rgba(234,179,8,0.15)",
+              backdropFilter: "blur(8px)",
+              color: "#fbbf24",
+              border: "1px solid rgba(234,179,8,0.3)",
+              boxShadow: "0 0 12px rgba(234,179,8,0.2)",
+            }}
+          >
+            {round + 1 >= TOTAL_ROUNDS ? "結果を見る" : "次へ →"}
           </button>
         </div>
       </div>
@@ -261,27 +342,44 @@ function GameInner() {
   // waiting / flash
   return (
     <div
-      className="min-h-dvh flex flex-col items-center justify-center select-none cursor-pointer"
+      className="min-h-dvh flex flex-col items-center justify-center select-none cursor-pointer relative"
       style={{
-        background: bgColor,
+        background: phase === "flash" ? bgColor : "linear-gradient(160deg, #0f0a00, #1a1000)",
         transition: phase === "flash" ? "background 0.05s" : "background 0.3s",
       }}
       onClick={handleTap}
       onTouchStart={(e) => { e.preventDefault(); handleTap(); }}
     >
-      <div className="text-center pointer-events-none">
+      {phase === "waiting" && <OrbBackground />}
+      <div className="text-center pointer-events-none relative z-10">
         {phase === "waiting" ? (
           <>
-            <div className="text-6xl mb-4 opacity-50">️</div>
-            <div className="text-xl font-bold text-blue-300 mb-2">準備して...</div>
-            <div className="text-sm text-blue-500">{round + 1} / {TOTAL_ROUNDS}回目</div>
-            <div className="mt-8 text-xs text-blue-700">光ったら即タップ！</div>
+            <div className="flex justify-center mb-4 opacity-80">
+              <TapMascot pose="ready" size={72} />
+            </div>
+            <div
+              className="text-xl font-bold mb-2"
+              style={{ color: "#fbbf24" }}
+            >
+              準備して...
+            </div>
+            <div className="text-sm text-yellow-600">{round + 1} / {TOTAL_ROUNDS}回目</div>
+            <div className="mt-8 text-xs text-yellow-800">光ったら即タップ！</div>
           </>
         ) : (
           <>
-            <div className="text-7xl mb-4 flash-anim"></div>
-            <div className="text-3xl font-black text-black mb-2">今すぐタップ！</div>
-            <div className="text-sm text-black opacity-60">{round + 1} / {TOTAL_ROUNDS}回目</div>
+            <div className="flex justify-center mb-4">
+              <TapMascot pose="fast" size={88} />
+            </div>
+            <div
+              className="text-3xl font-black mb-2"
+              style={{ color: "#000", textShadow: "0 0 8px rgba(0,0,0,0.3)" }}
+            >
+              今すぐタップ！
+            </div>
+            <div className="text-sm opacity-60" style={{ color: "#000" }}>
+              {round + 1} / {TOTAL_ROUNDS}回目
+            </div>
           </>
         )}
       </div>
@@ -292,9 +390,11 @@ function GameInner() {
 export default function GamePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-dvh flex items-center justify-center"
-        style={{ background: "#0a0a1a" }}>
-        <div className="text-blue-300 animate-pulse">読み込み中...</div>
+      <div
+        className="min-h-dvh flex items-center justify-center"
+        style={{ background: "linear-gradient(160deg, #0f0a00, #1a1000)" }}
+      >
+        <div className="text-yellow-300 animate-pulse">読み込み中...</div>
       </div>
     }>
       <GameInner />
