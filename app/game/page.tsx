@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect, Suspense } from "react";
+import { haptics } from "@/utils/haptics";
 import { useSearchParams } from "next/navigation";
 import ShareCard from "@/components/ShareCard";
 import OrbBackground from "@/components/OrbBackground";
@@ -51,12 +52,6 @@ function GameInner() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
   };
 
-  const vibrate = (pattern: number | number[]) => {
-    if (typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate(pattern);
-    }
-  };
-
   const startWaiting = useCallback(() => {
     setPhase("waiting");
     setMascotPose("ready");
@@ -89,13 +84,14 @@ function GameInner() {
       clearTimer();
       playFoul();
       playFoulSound();
-      vibrate([100, 50, 100]);
+      haptics.error();
       setIsFoul(true);
       setMascotPose("miss");
       setCurrentMs(1000);
       setPhase("result");
     } else if (phase === "flash") {
       clearTimer();
+      haptics.tap();
       const ms = Math.round(performance.now() - flashStartRef.current);
       playTap(ms);
       playTapHit(ms);
@@ -128,7 +124,7 @@ function GameInner() {
     setMascotPose("fast");
     playVictory();
     playCombo();
-    vibrate([100, 50, 100]);
+    haptics.success();
     const updatedStreak = updateStreak("shunkan_tap");
     setStreakData(updatedStreak);
     const valid = allTimes.filter(t => t < 1500);
