@@ -1,30 +1,27 @@
 # 瞬感タップ
+> 瞬間の反射神経を鍛えるタップゲーム
 
 ## サービス概要
-画面が光った瞬間にタップして反応速度をミリ秒単位で計測するブラウザゲームです。AIが診断コメントを提供します。平均は250ms。あなたは何ms？
+- **カテゴリ**: Webアプリ
+- **URL**: https://shunkan-tap.vercel.app
+- **提供形態**: Webブラウザで利用可能（登録不要で試せます）
+- **開発**: Claude Code + Next.js 16 + Vercel
 
-## 提供元
-ポッコリラボ（https://shunkan-tap.vercel.app）
+## 主要ページ
+- [トップページ](https://shunkan-tap.vercel.app/): メイン機能・サービス説明
+- [ツール](https://shunkan-tap.vercel.app/tool): AI機能の利用画面（一部サービス）
+- [プライバシーポリシー](https://shunkan-tap.vercel.app/privacy): 個人情報の取り扱い
+- [特定商取引法に基づく表記](https://shunkan-tap.vercel.app/legal): 法的情報
 
-## 主な機能
-- 画面フラッシュへの反応速度計測（ミリ秒単位）
-- 5回の平均値によるAI診断コメント
-- ハイスコアのローカル保存
-- スコアカード画像のSNSシェア
-- スマホ・PCどちらでも動作
-
-## 対象ユーザー
-反射神経を鍛えたい方、ゲーマー、スポーツ選手、友人と反応速度を競いたいすべての方
-
-## 計測方法
-スタートボタン押下後、ランダムなタイミングで画面が光り、タップするまでの時間をミリ秒で計測します。フライングは無効。
-
-## 利用規約・プライバシーポリシー
-- 利用規約: https://shunkan-tap.vercel.app/legal
-- プライバシーポリシー: https://shunkan-tap.vercel.app/privacy
+## 利用シーン
+瞬間の反射神経を鍛えるタップゲーム
 
 ## 技術スタック
-Next.js 15 / TypeScript / Vercel
+- フロントエンド: Next.js 16, React 19, TypeScript, Tailwind CSS
+- AI: Claude claude-sonnet-4-6 (Anthropic)
+- バックエンド: Vercel Edge Functions, Supabase
+- 決済: KOMOJU（クレジットカード・コンビニ払い対応）
 
-## 更新日
-2026-04-01
+## robots.txt
+AIクローラーによるインデックスを歓迎します。
+GPTBot, ClaudeBot, PerplexityBot, Googlebot-Extended のアクセスを許可しています。
