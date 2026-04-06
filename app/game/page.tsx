@@ -63,7 +63,7 @@ function GameInner() {
       setFlashColor(color);
       flashStartRef.current = performance.now();
       playFlash();
-      vibrate(50);
+      navigator.vibrate?.(50);
       setPhase("flash");
       setMascotPose("fast");
       timeoutRef.current = setTimeout(() => {
